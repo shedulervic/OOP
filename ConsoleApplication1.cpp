@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cstdint>
 #define SIZE 10
 using namespace std;
@@ -97,16 +97,20 @@ public:
     }
     void print()
     {
-        std::cout << "(";
         if (cursor != -1)
         {
+            std::cout << "(";
             for (int i = 0; i <= cursor; i++)
             {
                 std::cout << stack[i] << " ";
             }
+            std::cout << ")" << endl;
         }
-        std::cout << ")" << endl;
-        std::cout << "()" << endl;   
+        else
+        {
+            std::cout << "()" << endl;
+        }
+           
     }
 };
 
@@ -141,8 +145,9 @@ int main()
 
     stack.pop();
     stack.print();
-
-    
+    stack.pop();
+    stack.pop();
+    stack.print();
 
 }
 
