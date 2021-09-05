@@ -1,197 +1,22 @@
-#define _USE_MATH_DEFINES
 #include <iostream>
-#include <math.h> 
+#include <string>
+#include <vector>
+#include <cassert>
+#include <algorithm>
+#include <array>
 using namespace std;
-// 1 Задание
-class Figure
+
+
+int comp1(const void *a, const void *b)
 {
-public:
-	virtual void area() = 0;
-private:
-};
+	return (*(int*)a - *(int*)b);
+}
 
-class Parallelogram : public Figure
-{
-public:
-	 Parallelogram(int a, int b) {
-		m_a = a;
-		m_b = b;
-	};
-	~Parallelogram() {};
-	virtual void area() {
-		std::cout << "Площадь фигуры =  " << m_a*m_b << endl;
-	}
-private:
-	int m_a;
-	int m_b;
-};
-
-class Circle :public Figure
-{
-public:
-	Circle(double r) {
-		radius = r;
-	};
-	~Circle() {};
-	void area () {
-		std::cout << "Площадь круга =  " << M_PI*radius*radius << endl;
-	}
-private:
-	double radius;
-};
-
-class Rectangle :public Parallelogram
-{
-public:
-	Rectangle(int a, int b) : Parallelogram(a, b) {};
-	~Rectangle() {};
-};
-
-class Square :public Parallelogram
-{
-public:
-	Square();
-	Square(int a) : Parallelogram(a, a)
-	{
-		m_a = a;
-	};
-	~Square() {};
-	void area() {
-		
-		std::cout << "Площадь квадрата =  " << pow(m_a, 2) << endl;
-	}
-private:
-	int m_a;
-};
-
-class Rhombus :public Parallelogram
-{
-public:
-	Rhombus(int a, int b) : Parallelogram(a, b) {};
-	~Rhombus() {};
-};
-
- // 2 Задание
-class Car
-{
-public:
-	Car(string company, string model) {
-		m_company = company;
-		m_model = model;
-	};
-	virtual void data() {
-		std::cout << "автомобиль, марки " << m_model << ", производства " << m_company << endl;
-	};
-private:
-	string m_company;
-	string m_model;
-};
-
-class  PassengerCar : virtual public Car
-{
-public:
-	PassengerCar(string company, string model): Car(company, model) {
-		m_company = company;
-		m_model = model;
-	};
-	virtual void data() {
-		std::cout << "легковой автомобиль, марки " << m_model << ", производства " << m_company << endl;
-	};
-	~PassengerCar() {};
-
-private:
-	string m_company;
-	string m_model;
-};
-
-class Bus : virtual public Car
-{
-public:
-	Bus(string company, string model) : Car(company, model) {
-		m_company = company;
-		m_model = model;
-	};
-	virtual void data() {
-		std::cout << "автобус, марки " << m_model << ", производства " << m_company << endl;
-	};
-	~Bus() {};
-
-private:
-	string m_company;
-	string m_model;
-};
-
-class Minivan : public PassengerCar, public Bus
-{
-public:
-	Minivan(string company, string model) : Bus(company, model), PassengerCar(company, model), Car(company, model) {
-		m_company = company;
-		m_model = model;
-	};
-	void data() {
-		std::cout << "минивен, марки " << m_model << ", производства " << m_company << endl;
-	};
-private:
-	string m_company;
-	string m_model;
-};
-
-// 3 задание
-class Fraction
-{
-private:
-	double m_fraction[2];
-	Fraction simplification(Fraction r_fraction) { // Не успел дипилить до раб. состояния
-		int less, j;
-		int a = r_fraction.m_fraction[0];
-		int b = r_fraction.m_fraction[1];
-		do
-		{
-			if (a < b)
-				less = a;
-			else
-				less = b;
-			for (j = less; j > 0; j--) {
-				if (!(a % j) && !(b % j))
-				{
-					a /= j;
-					b /= j;
-					break;
-				}
-			}
-		} while (j != 1);
-		return Fraction(a, b);
-	};
-public:
-	Fraction(double numenator, double denomenator) {
-		if (denomenator == 0)
-		{
-			std::cout << "Знаменатель не должен быть равен нулю!" << endl;
-		}
-		else
-		{
-			m_fraction[0] = numenator;
-			m_fraction[1] = denomenator;
-		}
-	};
-	void printFraction() {
-		std::cout << m_fraction[0] << "/" << m_fraction[1] << endl;
-	}
-	
-	Fraction operator+(Fraction r_fraction) {
-		Fraction f = Fraction(((m_fraction[0]) * (r_fraction.m_fraction[1])) + ((m_fraction[1] * r_fraction.m_fraction[0])), 
-	((m_fraction[1] * r_fraction.m_fraction[1])));
-		return simplification(f);
-	};
-	Fraction operator-(Fraction r_fraction) {
-		return Fraction(m_fraction[0] * r_fraction.m_fraction[1], m_fraction[1] * r_fraction.m_fraction[1]);
-	};
-};
-
-// 4 задание
 class Card // емли я правильно понял то здесь только сама карта, колода отдельным объектом?
 {
 private:
+	
+public:
 	bool m_position;
 	enum Suit
 	{
@@ -204,51 +29,222 @@ private:
 	};
 	Suit m_card_suit;
 	cardValue m_card_value;
-public:
 	Card(Suit suit, cardValue value, bool position) {
 		m_card_suit = suit;
 		m_card_value = value;
 		m_position = position;
 	};
-	void Flip(){
+	void Flip() {
 		m_position = !m_position;
 	};
 	cardValue GetValue() const {
 		return m_card_value;
 	};
-	~Card();
+	~Card() {};
+};
+
+class Hand
+{
+private:
+	vector<Card*> hand;
+	int pointArr[13]{ 2,3,4,5,6,7,8,9,10,1,10,10,10 };
+public:
+	Hand(Card *card) {
+		hand.push_back(card);
+	};
+	void handAdd(Card *card) {
+		hand.push_back(card);
+	};
+	void handPrint() {
+		if (hand.empty())
+		{
+			cout << "рука пуста" << endl;
+		}
+		else
+		{
+			string suit[]{ "spades", "clubs", "hearts", "diamonds" };
+			string cardvalue[]{"TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "ACE", "KING", "QUEEN", "JACK"
+			};
+			for (auto& v : hand)
+			{
+				cout << suit[v->m_card_suit] << "|" << cardvalue[v->GetValue()] << "|" << v->m_position << endl;
+			}
+
+		}
+			};
+	void GetValue() {
+		int value = 0;
+		int a = 0;
+		for (auto& v : hand)
+		{
+			value += pointArr[v->GetValue()];
+			if (pointArr[v->GetValue()] == 1)
+			{
+				a = a + 1;
+			}
+		}
+		if (a > 0)
+		{
+			for (a > 0; a--;)
+			{
+				if (value < 11)
+				{
+					value = value + 10;
+				}
+			}
+		}
+		//for (int i = 0; i < hand.size(); i++)
+		//{
+		//	if (hand[i]->GetValue() == 1)
+		//	{
+		//		a + 1;
+		//	}
+		//	else
+		//	{
+		//	/*	value += pointArr[];*/
+		//	}
+		//}
+		//if (a > 0)
+		//{
+		//	for (a > 0; a--;)
+		//	{
+		//		if (value < 11)
+		//		{
+		//			value + 10;
+		//		}
+		//	}
+		//}
+		
+		cout << "очков: " << value << endl;
+	};
+	~Hand() {
+		hand.clear();
+	};
+};
+
+class ArrayInt
+{
+private:
+	int *m_data;
+	int m_length;
+public:
+	ArrayInt() : m_length(0), m_data(nullptr) {
+
+	}
+	ArrayInt(int lenght) : m_length(lenght) {
+		assert(lenght >= 0);
+		if (lenght > 0)
+		{
+			m_data = new int[lenght];
+		}
+		else
+		{
+			m_data = nullptr;
+		}
+	}
+	~ArrayInt() {
+		delete[] m_data;
+	}
+	void clear() {
+		delete[] m_data;
+		m_data = nullptr;
+		m_length = 0;
+	}
+	int size() {
+		return m_length;
+	}
+	int& operator[](int index) {
+		assert(index >= 0 && index < m_length);
+		return m_data[index];
+	}
+	void resize(int newLength) {
+		if (newLength == m_length)
+			return;
+		if (newLength <= 0)
+			clear();
+		return;
+		int *data = new int[newLength];
+		int elementsToCopy = newLength > m_length ? m_length : newLength;
+		for (int i = 0; i < elementsToCopy; ++i)
+		{
+			data[i] = m_data[i];
+		}
+		delete[] m_data;
+		m_data = data;
+		m_length = newLength;
+	}
+	void insertBefore(int value, int index) {
+		//Проверка корректности индекса
+		assert(index >= 0 && index <= m_length);
+		//создаем массив +1 к старому
+		int *data = new int(m_length + 1);
+		// Копируем элементы до индекса
+		for (int before = 0; before < index; ++before)
+			data[before] = m_data[before];
+		// вставляем элемент
+		data[index] = value;
+		//копируем элементы после всталяемого
+		for (int after = index; after < m_length; ++after)
+			data[after + 1] = m_data[after];
+		//Удаляем старый массив и оставляем новый
+		delete[] m_data;
+		m_data = data;
+		++m_length;
+	}
+	//задание 1
+	int popBack() {
+		return m_data[m_length];
+		m_length--;
+	}
+	int popFront() {
+		return m_data[0];
+		int* data = new int(m_length - 1);
+		for (int index = 0; index < m_length - 1; index++)
+			data[index] = m_data[index + 1];
+	}
+	void sortArr() {
+		qsort(m_data, m_length, sizeof(int), comp1);
+	}
+	void print(int index) {
+		(assert(index >= 0 && index <= m_length));
+		cout << m_data[index] << endl;
+	}
+	void push_back(int value) {
+		insertBefore(value, m_length);
+	}
+	void getValue() {
+	
+	};
 };
 
 int main()
 {
-	setlocale(LC_ALL, "Russian");
-    std::cout << "Задание 1" << endl;
-	// 1 Задание
-	Circle circle(2);
-	Figure* figureCircle = &circle;
-	figureCircle->area();
-	Square square(2);
-	Figure* figureSquare = &square;
-	figureSquare->area();
-	Rhombus rhombus(2, 4);
-	rhombus.area();
-	// 2 Задание
-	std::cout << "Задание 2" << endl;
-	PassengerCar car1("lada", "2201");
-	car1.data();
-	Bus bus("ikarus", "А я и не помгю моделей");
-	bus.data();
-	Minivan van("dodje", "caravan");
-	van.data();
-	// 3 Задание
-	std::cout << "Задание 3" << endl;
-	Fraction fraction(3, 7);
-	fraction.printFraction();
-	Fraction fraction2(5, 9);
-	Fraction fraction3 = fraction + fraction2;
-	fraction3.printFraction();
-	Fraction fraction4 = fraction3 - fraction2;
-	fraction4.printFraction();
+    setlocale(LC_ALL, "Russian");
+	/*ArrayInt arr(3);
+	int a = 1;
+	arr.insertBefore(a, 0);
+	arr.print(0)*/; // может вы подскажете что здесь не так? гдето поппутал с ссылками?
 
+	//Задание 2 
+	vector<int> v{ 1,5,5,5,4 };
+	sort(v.begin(), v.end());
+	int results = unique(v.begin(), v.end()) - v.begin();
+	cout << results << endl;
+	//Задание 3
+	Card card(Card::Suit::clubs, Card::cardValue::THREE, 0);
+	Card card2(Card::Suit::hearts, Card::cardValue::ACE, 0);
+	Card card3(Card::Suit::diamonds, Card::cardValue::JACK, 0);
+	Card card4(Card::Suit::hearts, Card::cardValue::FIVE, 0);
+	Hand hand(&card);
+	hand.handAdd(&card2);
+	hand.handAdd(&card3);
+	hand.handAdd(&card4);
+	hand.handPrint();
+	hand.GetValue();
+	hand.~Hand();
+	hand.handPrint();
 }
+
+
+
 
