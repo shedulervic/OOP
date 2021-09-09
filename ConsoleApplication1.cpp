@@ -48,7 +48,9 @@ class Hand
 public:
     Hand();
     // виртуальный деструктор
-    virtual ~Hand();
+    ~Hand() {
+        Clear();
+    };
 
     // добавляет карту в руку
     void Add(Card* pCard);
@@ -70,10 +72,7 @@ Hand::Hand()
 }
 // деструктор по-прежнему виртуальный
 // это уже можно не обозначать
-Hand::~Hand()
-{
-    Clear();
-}
+
 
 void Hand::Add(Card* pCard)
 {
@@ -232,9 +231,4 @@ int main()
     StringValuePair<int> svp("Amazing", 7);
     std::cout << "Pair: " << svp.first() << ' ' << svp.second() << '\n';
 }
-
-
-
-
-
 
